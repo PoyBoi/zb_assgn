@@ -1,0 +1,4 @@
+- started off with reading through it thoroughly and understanding what is needed
+- made notes with what the required columns are in the spreadsheet(s)
+    - and made EXTRA SURE i didn't mess up anything because commits are set in stone
+- noted realistic expectations of the deliverables
