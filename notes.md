@@ -43,3 +43,14 @@
     
     - Extra Notes:
         - Preferably give this in PDF format (for extra brownie points)
+
+
+# Submission Checklist
+- Spreadsheet (Google Sheets link or Excel file) with 20+ articles cataloged
+- Workflow documentation (PDF or Markdown) including:
+    - Workflow diagram
+    - LLM prompt templates
+- Gap analysis report (1-2 pages) with:
+    - Gap identification table
+    - Priority rationale
+    - Suggested article outlines for top 2 gap
