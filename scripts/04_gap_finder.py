@@ -226,6 +226,284 @@ def plotly_3d(df_meta, coords, out_html=OUT_HTML):
     fig.write_html(out_html, include_plotlyjs="cdn")
     print(f"[info] 3D plot saved to {out_html}")
 
+def plotly_3d_with_colorful_edges_and_toggle(df_meta, coords, site_map, gaps_df=None, out_html="site_vectors_3d_with_edges.html", seed=42):
+    """
+    Plot 3D semantic map with:
+      - each existing connection in a (random) color (or grouped colors if too many)
+      - gap candidate links hidden by default, toggleable via buttons
+      - UI buttons: show/hide existing edges, show/hide gaps
+    Args:
+      df_meta : DataFrame containing at least ['URL','Name','Category'] and optional 'cluster'
+      coords  : numpy array (N,3)
+      site_map: dict parent -> [children...]
+      gaps_df : DataFrame with columns ['url_a','url_b','distance', ...] (optional)
+    """
+    import plotly.graph_objects as go
+    import numpy as np
+    import random
+    from math import ceil
+    import plotly.express as px
+
+    random.seed(seed)
+    np.random.seed(seed)
+
+    # build plotting dataframe
+    df_plot = df_meta.copy().reset_index(drop=True)
+    df_plot["x"] = coords[:, 0]
+    df_plot["y"] = coords[:, 1]
+    df_plot["z"] = coords[:, 2]
+    df_plot["hover_text"] = df_plot.apply(
+        lambda r: f"<b>{r.get('Name','')}</b><br>{r.get('URL','')}<br>Category: {r.get('Category','')}",
+        axis=1
+    )
+
+    # quick map URL -> coords
+    url_to_coord = {row["URL"]: (row["x"], row["y"], row["z"]) for _, row in df_plot.iterrows()}
+
+    # collect existing directed/undirected edges from site_map
+    existing_edges = []
+    for parent, children in site_map.items():
+        if parent not in url_to_coord:
+            continue
+        for ch in children:
+            if ch not in url_to_coord:
+                continue
+            # treat edges as undirected for visualization
+            a, b = sorted((parent, ch))
+            existing_edges.append((a, b))
+    # dedupe
+    existing_edges = list(dict.fromkeys(existing_edges))
+
+    n_edges = len(existing_edges)
+    print(f"[info] existing edges: {n_edges}")
+
+    # decide per-edge traces vs grouped traces
+    PER_EDGE_LIMIT = 800   # threshold for making per-edge traces
+    if n_edges <= PER_EDGE_LIMIT:
+        per_edge = True
+        print("[info] creating one trace per existing edge (per-edge mode).")
+    else:
+        per_edge = False
+        N_BUCKETS = 30
+        print(f"[info] too many edges ({n_edges}), grouping into {N_BUCKETS} color buckets for performance.")
+
+    traces = []
+    existing_edge_trace_indices = []  # indices of traces corresponding to existing edges (one or many)
+    gap_trace_indices = []
+
+    # ---------- Existing edges traces ----------
+    if per_edge:
+        # make one trace per edge with random color
+        for (a, b) in existing_edges:
+            x0, y0, z0 = url_to_coord[a]
+            x1, y1, z1 = url_to_coord[b]
+            color = "rgb({}, {}, {})".format(*[random.randint(20,220) for _ in range(3)])
+            tr = go.Scatter3d(
+                x=[x0, x1],
+                y=[y0, y1],
+                z=[z0, z1],
+                mode="lines",
+                line=dict(color=color, width=3),
+                hoverinfo="none",
+                visible=True,
+                showlegend=False
+            )
+            existing_edge_trace_indices.append(len(traces))
+            traces.append(tr)
+    else:
+        # group edges into buckets by hashing, create one trace per bucket with a single color
+        N_BUCKETS = 30
+        buckets = [[] for _ in range(N_BUCKETS)]
+        for (a, b) in existing_edges:
+            idx = hash(a + "||" + b) % N_BUCKETS
+            buckets[idx].append((a, b))
+        # create a trace per non-empty bucket
+        for bucket in buckets:
+            if not bucket:
+                continue
+            xs, ys, zs = [], [], []
+            color = "rgb({}, {}, {})".format(*[random.randint(20,220) for _ in range(3)])
+            for (a,b) in bucket:
+                x0, y0, z0 = url_to_coord[a]
+                x1, y1, z1 = url_to_coord[b]
+                xs += [x0, x1, None]
+                ys += [y0, y1, None]
+                zs += [z0, z1, None]
+            tr = go.Scatter3d(
+                x=xs, y=ys, z=zs,
+                mode="lines",
+                line=dict(color=color, width=2.5),
+                hoverinfo="none",
+                visible=True,
+                showlegend=False
+            )
+            existing_edge_trace_indices.append(len(traces))
+            traces.append(tr)
+
+    # ---------- Gap candidate traces (hidden by default) ----------
+    if gaps_df is not None and len(gaps_df) > 0:
+        # ensure gaps_df rows correspond to urls present in url_to_coord
+        gaps = []
+        for _, r in gaps_df.iterrows():
+            a = r["url_a"]; b = r["url_b"]
+            if a in url_to_coord and b in url_to_coord:
+                gaps.append((a, b))
+        print(f"[info] gap candidate pairs present: {len(gaps)}")
+        # If not too many, make per-gap trace; otherwise group into a few traces
+        MAX_GAP_PER_EDGE = 1000
+        if len(gaps) <= MAX_GAP_PER_EDGE:
+            for (a,b) in gaps:
+                x0, y0, z0 = url_to_coord[a]
+                x1, y1, z1 = url_to_coord[b]
+                # use a distinct palette (red-ish)
+                color = "rgb({}, {}, {})".format(220, random.randint(30,120), random.randint(30,120))
+                tr = go.Scatter3d(
+                    x=[x0, x1],
+                    y=[y0, y1],
+                    z=[z0, z1],
+                    mode="lines",
+                    line=dict(color=color, width=3, dash="dash"),
+                    hoverinfo="none",
+                    visible=False,   # hidden by default
+                    showlegend=False
+                )
+                gap_trace_indices.append(len(traces))
+                traces.append(tr)
+        else:
+            # bucket gaps into groups
+            G_BUCKETS = 20
+            buckets = [[] for _ in range(G_BUCKETS)]
+            for (a, b) in gaps:
+                idx = hash(a + "||" + b) % G_BUCKETS
+                buckets[idx].append((a,b))
+            for bucket in buckets:
+                if not bucket:
+                    continue
+                xs, ys, zs = [], [], []
+                color = "rgb({}, {}, {})".format(220, random.randint(30,100), random.randint(30,100))
+                for (a,b) in bucket:
+                    x0, y0, z0 = url_to_coord[a]
+                    x1, y1, z1 = url_to_coord[b]
+                    xs += [x0, x1, None]
+                    ys += [y0, y1, None]
+                    zs += [z0, z1, None]
+                tr = go.Scatter3d(
+                    x=xs, y=ys, z=zs,
+                    mode="lines",
+                    line=dict(color=color, width=2.5, dash="dash"),
+                    hoverinfo="none",
+                    visible=False,
+                    showlegend=False
+                )
+                gap_trace_indices.append(len(traces))
+                traces.append(tr)
+
+    # ---------------------
+    # NODE TRACE (FIXED COLOR HANDLING)
+    # ---------------------
+    if "cluster" in df_plot.columns:
+        # numeric cluster ids → colorscale
+        node_colors = df_plot["cluster"].astype(int)
+        show_colorbar = True
+    else:
+        node_colors = "orange"
+        show_colorbar = False
+
+    node_trace = go.Scatter3d(
+        x=df_plot["x"],
+        y=df_plot["y"],
+        z=df_plot["z"],
+        mode="markers",
+        marker=dict(
+            size=7,
+            color=node_colors,
+            colorscale="Viridis",   # perceptually uniform
+            opacity=0.95,
+            showscale=show_colorbar,
+            colorbar=dict(
+                title="Cluster",
+                thickness=15
+            ),
+            line=dict(width=1.0, color="black")
+        ),
+        text=df_plot["hover_text"],
+        hoverinfo="text",
+        name="Articles",
+        visible=True
+    )
+
+    # append node trace last so nodes are drawn on top
+    node_trace_index = len(traces)
+    traces.append(node_trace)
+
+    # ---------- Build figure ----------
+    layout = go.Layout(
+        title="Semantic 3D Map — edges colored per connection",
+        showlegend=False,
+        height=900,
+        scene=dict(
+            camera=dict(eye=dict(x=1.2, y=1.2, z=0.9)),
+            xaxis=dict(visible=False), yaxis=dict(visible=False), zaxis=dict(visible=False)
+        ),
+        margin=dict(t=50, l=0, r=0, b=0),
+    )
+
+    fig = go.Figure(data=traces, layout=layout)
+
+    # ---------- Updatemenus (buttons to show/hide existing edges & gaps) ----------
+    updatemenus = []
+
+    if existing_edge_trace_indices:
+        updatemenus.append(dict(
+            type="buttons",
+            direction="left",
+            x=0.02, y=1.02,
+            showactive=False,
+            buttons=[
+                dict(label="Hide existing connections",
+                     method="restyle",
+                     args=[{"visible": False}, existing_edge_trace_indices]),
+                dict(label="Show existing connections",
+                     method="restyle",
+                     args=[{"visible": True}, existing_edge_trace_indices])
+            ]
+        ))
+
+    if gap_trace_indices:
+        updatemenus.append(dict(
+            type="buttons",
+            direction="left",
+            x=0.33, y=1.02,
+            showactive=False,
+            buttons=[
+                dict(label="Show gap candidates",
+                     method="restyle",
+                     args=[{"visible": True}, gap_trace_indices]),
+                dict(label="Hide gap candidates",
+                     method="restyle",
+                     args=[{"visible": False}, gap_trace_indices])
+            ]
+        ))
+
+    # add a camera reset button (optional)
+    updatemenus.append(dict(
+        type="buttons",
+        direction="left",
+        x=0.66, y=1.02,
+        showactive=False,
+        buttons=[
+            dict(label="Reset camera",
+                 method="relayout",
+                 args=[{"scene.camera.eye": dict(x=1.2, y=1.2, z=0.9)}])
+        ]
+    ))
+
+    fig.update_layout(updatemenus=updatemenus)
+
+    # Save HTML
+    fig.write_html(out_html, include_plotlyjs="cdn")
+    print(f"[info] Saved interactive plot with toggles to: {out_html}")
+
 # ---------------- Main ----------------
 
 def main(args):
@@ -273,8 +551,16 @@ def main(args):
     df_meta.to_csv(OUT_VECTORS_CSV, index=False)
     print(f"[info] Saved vectors + metadata to {OUT_VECTORS_CSV}")
 
-    # Save 3D interactive plot
+    # Load site_map (needed for drawing edges) and save 3D interactive plot with edges
+    # site_map = load_site_map(SITE_MAP_FILE)
+    # plotly_3d(df_meta, coords, site_map, out_html=args.out_html)
     plotly_3d(df_meta, coords, out_html=args.out_html)
+
+    # Load colored map
+    site_map_01 = json.load(open("site_map.json"))
+    gaps_df = pd.read_csv("assignments/zb_assgn/backup/gap_candidates.csv")  # produced by vectorisation script
+    plotly_3d_with_colorful_edges_and_toggle(df_meta, coords, site_map_01, gaps_df=gaps_df, out_html="assignments/zb_assgn/backup/map_with_toggles.html")
+
 
     # compute pairwise distances
     n = coords.shape[0]
