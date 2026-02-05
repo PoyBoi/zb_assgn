@@ -13,7 +13,7 @@ COMMON_PHRASES_OUT = "assignments/zb_assgn/backup/common_phrases.txt"
 
 TEXT_COL = "Article Content"
 MIN_DOC_FRACTION = 0.9   # phrase must appear in >90% of articles
-NGRAM_RANGE = (2, 10)      # bigrams → 10-grams
+NGRAM_RANGE = (5, 10)      # bigrams → 10-grams
 MIN_PHRASE_FREQ = 5       # safety threshold
 
 # ---------------- Load ----------------
