@@ -3,3 +3,5 @@ beautifulsoup4
 lxml 
 tldextract
 playwright
+nltk
+scikit-learn
