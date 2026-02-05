@@ -2,7 +2,7 @@ import asyncio
 import json
 import csv
 import re
-from urllib.parse import urlparse
+from urllib.parse import urlparse, urljoin
 from datetime import datetime
 
 from bs4 import BeautifulSoup
@@ -29,7 +29,6 @@ def extract_category(url: str) -> str:
     return path.split("/")[0].replace("-", " ").title()
 
 def normalize_date(date_str: str) -> str:
-    """Try to normalize common HTTP / meta date formats."""
     if not date_str:
         return ""
     for fmt in (
@@ -43,28 +42,55 @@ def normalize_date(date_str: str) -> str:
             continue
     return ""
 
-def detect_screenshots(soup: BeautifulSoup) -> str:
-    for img in soup.find_all("img"):
-        src = (img.get("src") or "").lower()
-        alt = (img.get("alt") or "").lower()
-        if "screen" in src or "screen" in alt:
-            return "Yes"
-    return "No"
-
 def extract_last_updated(soup: BeautifulSoup, headers: dict) -> str:
-    # 1) meta tags (best effort)
     meta = soup.find("meta", {"name": re.compile("modified|updated", re.I)})
     if meta and meta.get("content"):
         return normalize_date(meta["content"])
 
-    # 2) visible text patterns
     text = soup.get_text(" ", strip=True)
     match = re.search(r"last updated[:\s]+([A-Za-z0-9, ]{8,})", text, re.I)
     if match:
         return normalize_date(match.group(1))
 
-    # 3) HTTP headers fallback
     return normalize_date(headers.get("Last-Modified", ""))
+
+def extract_article_text(soup: BeautifulSoup) -> str:
+    for tag in soup(["script", "style", "noscript"]):
+        tag.decompose()
+    text = soup.get_text(separator=" ", strip=True)
+    text = re.sub(r"\s{2,}", " ", text)
+    return text
+
+def extract_images(soup: BeautifulSoup, base_url: str) -> list[str]:
+    images = set()
+    for img in soup.find_all("img"):
+        src = img.get("src")
+        if src:
+            images.add(urljoin(base_url, src))
+    return sorted(images)
+
+def extract_youtube_links(soup: BeautifulSoup, base_url: str) -> list[str]:
+    yt_links = set()
+
+    # iframe embeds
+    for iframe in soup.find_all("iframe"):
+        src = iframe.get("src", "")
+        if "youtube.com" in src or "youtu.be" in src:
+            yt_links.add(src)
+
+    # anchor links
+    for a in soup.find_all("a", href=True):
+        href = a["href"]
+        if "youtube.com" in href or "youtu.be" in href:
+            yt_links.add(urljoin(base_url, href))
+
+    return sorted(yt_links)
+
+def detect_screenshots(image_links: list[str]) -> str:
+    for img in image_links:
+        if "screen" in img.lower():
+            return "Yes"
+    return "No"
 
 # ---------------- Main extraction ----------------
 
@@ -73,8 +99,7 @@ async def extract_all():
         site_map = json.load(f)
 
     all_pages = load_all_unique_pages(site_map)
-
-    print(f"Found {len(all_pages)} unique pages to extract\n", flush=True)
+    print(f"Found {len(all_pages)} unique pages\n", flush=True)
 
     rows = []
     article_counter = 1
@@ -94,7 +119,7 @@ async def extract_all():
                     wait_until="networkidle"
                 )
             except Exception as e:
-                print(f"  ✗ Failed to load: {e}", flush=True)
+                print(f"  ✗ Failed: {e}", flush=True)
                 continue
 
             html = await page.content()
@@ -102,7 +127,11 @@ async def extract_all():
 
             title = (soup.title.string or "").strip() if soup.title else ""
             category = extract_category(url)
-            has_screenshots = detect_screenshots(soup)
+
+            article_text = extract_article_text(soup)
+            image_links = extract_images(soup, url)
+            youtube_links = extract_youtube_links(soup, url)
+            has_screenshots = detect_screenshots(image_links)
             last_updated = extract_last_updated(soup, response.headers if response else {})
 
             rows.append({
@@ -112,6 +141,9 @@ async def extract_all():
                 "URL": url,
                 "Last Updated": last_updated,
                 "Has Screenshots": has_screenshots,
+                "YouTube Links": ", ".join(youtube_links),
+                "Image Links": ", ".join(image_links),
+                "Article Content": article_text,
                 "Linked Pages": ", ".join(site_map.get(url, []))
             })
 
@@ -132,6 +164,9 @@ def write_csv(rows):
         "URL",
         "Last Updated",
         "Has Screenshots",
+        "YouTube Links",
+        "Image Links",
+        "Article Content",
         "Linked Pages"
     ]
 
