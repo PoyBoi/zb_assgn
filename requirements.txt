@@ -1,7 +1,19 @@
+# Site crawling
 requests 
 beautifulsoup4 
 lxml 
 tldextract
+
+# Site Scraping
 playwright
 nltk
+
+# Data Cleansing
 scikit-learn
+
+# Data Vectorization
+umap-learn
+plotly
+pandas
+scipy
+numpy
