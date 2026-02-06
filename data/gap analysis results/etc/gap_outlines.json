@@ -1,0 +1,152 @@
+[
+  {
+    "Gap ID": "GAP-001",
+    "Suggested Title": "Task Creation and Management with Embedded Annotations",
+    "Outline": [
+      {
+        "section_title": "Introduction to Embedded Annotations",
+        "section_summary": "Overview of embedded annotations within zipBoard.",
+        "section_bullets": [
+          "Definition",
+          "How it differs from browser extensions"
+        ]
+      },
+      {
+        "section_title": "Benefits of Using Embedded Annotations",
+        "section_summary": "Advantages of using embedded annotations for task management.",
+        "section_bullets": [
+          "Ease of use",
+          "Improved collaboration"
+        ]
+      },
+      {
+        "section_title": "Setting Up Embedded Annotations",
+        "section_summary": "Steps to embed annotations on a webpage.",
+        "section_bullets": [
+          "Installation process",
+          "Configuration settings"
+        ]
+      },
+      {
+        "section_title": "Creating Tasks with Embedded Annotations",
+        "section_summary": "How to create tasks directly from embedded annotations.",
+        "section_bullets": [
+          "Marking issues",
+          "Assigning tasks"
+        ]
+      },
+      {
+        "section_title": "Managing Tasks Using Embedded Annotations",
+        "section_summary": "Methods for managing and tracking tasks within the platform.",
+        "section_bullets": [
+          "Viewing task list",
+          "Updating task status"
+        ]
+      },
+      {
+        "section_title": "Collaboration with Embedded Annotations",
+        "section_summary": "How team members can collaborate using embedded annotations.",
+        "section_bullets": [
+          "Communicating about tasks",
+          "Resolving issues"
+        ]
+      },
+      {
+        "section_title": "Integrations with Other Tools",
+        "section_summary": "Compatibility of embedded annotations with other tools for seamless workflow.",
+        "section_bullets": [
+          "Jira",
+          "Slack",
+          "GitHub"
+        ]
+      },
+      {
+        "section_title": "Troubleshooting Embedded Annotations",
+        "section_summary": "Steps to take when facing issues with embedded annotations.",
+        "section_bullets": [
+          "Common problems",
+          "Solutions and workarounds"
+        ]
+      },
+      {
+        "section_title": "Conclusion",
+        "section_summary": "Recap of using embedded annotations for task management within zipBoard.",
+        "section_bullets": [
+          "Key benefits",
+          "Potential improvements"
+        ]
+      }
+    ],
+    "Body Markdown": ""
+  },
+  {
+    "Gap ID": "GAP-002",
+    "Suggested Title": "File Sharing with Extension-Free Review Experience",
+    "Outline": [
+      {
+        "section_title": "Introduction",
+        "section_summary": "Overview of embedded annotations for file sharing",
+        "section_bullets": [
+          "Explanation of the need for this feature"
+        ]
+      },
+      {
+        "section_title": "Prerequisites",
+        "section_summary": "Requirements to use embedded annotations",
+        "section_bullets": [
+          "No browser extension needed"
+        ]
+      },
+      {
+        "section_title": "File Upload",
+        "section_summary": "How to upload files for annotation",
+        "section_bullets": [
+          "Step-by-step guide to file uploading"
+        ]
+      },
+      {
+        "section_title": "Annotation Tools",
+        "section_summary": "Description of available annotation tools",
+        "section_bullets": [
+          "Highlight, draw, comment, etc."
+        ]
+      },
+      {
+        "section_title": "Sharing Files",
+        "section_summary": "How to share annotated files with clients",
+        "section_bullets": [
+          "Link sharing options and permissions"
+        ]
+      },
+      {
+        "section_title": "Receiving Feedback",
+        "section_summary": "Explanation of how clients can provide feedback",
+        "section_bullets": [
+          "Instructions for clients on using annotations"
+        ]
+      },
+      {
+        "section_title": "Reviewing Client Feedback",
+        "section_summary": "How to review and manage client feedback",
+        "section_bullets": [
+          "Steps to view, accept or reject feedback"
+        ]
+      },
+      {
+        "section_title": "Troubleshooting",
+        "section_summary": "Common issues and solutions for embedded annotations",
+        "section_bullets": [
+          "FAQs and tips for smooth usage"
+        ]
+      },
+      {
+        "section_title": "Conclusion",
+        "section_summary": "Recap of the benefits and ease of use of embedded annotations",
+        "section_bullets": [
+          "Encouragement to try this feature for efficient collaboration"
+        ]
+      }
+    ],
+    "Body Markdown": ""
+  }
+]
