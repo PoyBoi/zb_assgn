@@ -17,3 +17,6 @@ plotly
 pandas
 scipy
 numpy
+
+# Data Transformation
+sentence-transformers
