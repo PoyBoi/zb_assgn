@@ -1,24 +1,25 @@
 # Todo's
 
 ### Article Spreadsheet:
-    - [ ] Scrape the [website](https://help.zipboard.co/) into the spreadsheet
-        - [ ] Find which LLM to use
-            - [ ] Figure out the prompt
+    - [x] Scrape the [website](https://help.zipboard.co/) into the spreadsheet
+        - [x] Find which LLM to use - `mistral:7b`, works well on my system without having to use the quant version of the model
+            - [x] Figure out the prompt
         - [ ] How do I make it automated on page refresh (do this later, first get the pages onto the system)
-        - [ ] I need to crawl every page while checking:
+            - Using the sitmap:
+                - [ ] can save this to be used as a "has anything been updated" / "do I need to run the job rn ?"
+                - [ ] make it so that updates only what has been updated, and does NOT update everything all at once
+        - [x] I need to crawl every page while checking:
             - for:
                 - Sub-pages
                 - Screenshots if they exist or not
                 - YT-links
                 - Embedded videos
             - if they do:
-                - [ ] go till the end, and make a sitemap
-                    - can save this to be used as a "has anything been updated" / "do I need to run the job rn ?"
-                        - make it so that updates only what has been updated, and does NOT update everything all at once
-                - [ ] use that to help populate the basic-barebones CSV
+                - [x] go till the end, and make a sitemap (edit: DFS [Depth-First Search])
+                - [x] use that to help populate the basic-barebones CSV
     
-    - [ ] LLM time:
-        - [ ] Use to populate the empty areas:
+    - [x] LLM time:
+        - [x] Use to populate the empty areas:
             - of:
                 - Topics Covered:
                     - Ask the LLM to read the page and tell me the key topics
@@ -73,27 +74,12 @@
 
 ### Cleaning up work:
 
-- What is done: 
-    - site scraping
-    - turning it into a network 
-    - tf idf embeddings
-    - data cleaning 
-    - gap identification v1
-    - fixing scraping 
-
 - What's left: 
-    - [x] gaps identification v2 to make sure that the gaps are genuine and logical
-        - using the content of the articles, make a gap identifier based on the keywords, use the newer table to help with that 
-
-    - [x] based on the topics, need to generate a title 
-    - [x] based on the content, need to generate an outline (for 2 gaps)
-    - [ ] need to make one table by AI and one by my self
-    - [ ] need to format final deliverable spreadsheet
-
-    - [ ] workflow diagram 
+    - [ ] Need to make this a job which runs and checks if there have been changes in the pages, and if there have been changes in the pages, check which one (if there have been additions / deletions) and run the pipeline as such
+    - [ ] Workflow Diagram 
     - [ ] LLM prompts
 
 ### Future Improvements
 - Use an LLM to measure the gap between two articles based on their content (based on the keywords)
     - Not doing this because it's very time consuming
-- Use the LLM to generate an article given all the articles and ask it to generate an article which joins two articles which may not be linked in theory
+- Use LLMs to generate an article which joins two articles which may not be linked in theory, given all the articles as context
