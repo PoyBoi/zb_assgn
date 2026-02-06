@@ -7,9 +7,9 @@ import pandas as pd
 from sklearn.feature_extraction.text import CountVectorizer
 
 # ---------------- Config ----------------
-INPUT_CSV = "assignments/zb_assgn/backup/file_content.csv"
-OUTPUT_CSV = "assignments/zb_assgn/backup/file_content_cleaned.csv"
-COMMON_PHRASES_OUT = "assignments/zb_assgn/backup/common_phrases.txt"
+INPUT_CSV = "assignments/zb_assgn/data/file_content.csv"
+OUTPUT_CSV = "assignments/zb_assgn/data/file_content_cleaned.csv"
+COMMON_PHRASES_OUT = "assignments/zb_assgn/data/common_phrases.txt"
 
 TEXT_COL = "Article Content"             # source text column
 NAME_COL = "Name"                        # will be overwritten / fixed

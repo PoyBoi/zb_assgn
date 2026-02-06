@@ -29,11 +29,11 @@ import argparse
 import sys
 
 # ---------------- Configuration / Defaults ----------------
-DEFAULT_INPUT_CSVS = ["assignments/zb_assgn/backup/file_content_cleaned.csv", "assignments/zb_assgn/backup/file_content.csv"]
-SITE_MAP_FILE = "assignments/zb_assgn/backup/site_map.json"
-OUT_VECTORS_CSV = "assignments/zb_assgn/backup/vectors_3d.csv"
-OUT_GAPS_CSV = "assignments/zb_assgn/backup/gap_candidates.csv"
-OUT_HTML = "assignments/zb_assgn/backup/site_vectors_3d.html"
+DEFAULT_INPUT_CSVS = ["assignments/zb_assgn/data/file_content_cleaned.csv", "assignments/zb_assgn/data/file_content.csv"]
+SITE_MAP_FILE = "assignments/zb_assgn/data/site_map.json"
+OUT_VECTORS_CSV = "assignments/zb_assgn/data/vectors_3d.csv"
+OUT_GAPS_CSV = "assignments/zb_assgn/data/gap_candidates.csv"
+OUT_HTML = "assignments/zb_assgn/data/site_vectors_3d.html"
 
 TFIDF_MAX_FEATURES = 5000
 TFIDF_MIN_DF = 2
@@ -558,8 +558,8 @@ def main(args):
 
     # Load colored map
     site_map_01 = json.load(open("site_map.json"))
-    gaps_df = pd.read_csv("assignments/zb_assgn/backup/gap_candidates.csv")  # produced by vectorisation script
-    plotly_3d_with_colorful_edges_and_toggle(df_meta, coords, site_map_01, gaps_df=gaps_df, out_html="assignments/zb_assgn/backup/map_with_toggles.html")
+    gaps_df = pd.read_csv("assignments/zb_assgn/data/gap_candidates.csv")  # produced by vectorisation script
+    plotly_3d_with_colorful_edges_and_toggle(df_meta, coords, site_map_01, gaps_df=gaps_df, out_html="assignments/zb_assgn/data/map_with_toggles.html")
 
 
     # compute pairwise distances

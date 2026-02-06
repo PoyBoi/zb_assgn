@@ -8,7 +8,7 @@ from bs4 import BeautifulSoup
 from playwright.async_api import async_playwright
 
 ROOT_URL = "https://help.zipboard.co"
-OUT_JSON = "assignments/zb_assgn/backup/site_map.json"
+OUT_JSON = "assignments/zb_assgn/data/site_map.json"
 
 MAX_PAGES = 2000          # safety cap
 PAGE_TIMEOUT = 15000     # ms

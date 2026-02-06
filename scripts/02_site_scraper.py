@@ -8,8 +8,8 @@ from datetime import datetime
 from bs4 import BeautifulSoup
 from playwright.async_api import async_playwright
 
-SITE_MAP_FILE = "assignments/zb_assgn/backup/site_map.json"
-OUT_CSV = "assignments/zb_assgn/backup/file_content.csv"
+SITE_MAP_FILE = "assignments/zb_assgn/data/site_map.json"
+OUT_CSV = "assignments/zb_assgn/data/file_content.csv"
 
 PAGE_TIMEOUT = 15000  # ms
 CRAWL_DELAY = 0.05
@@ -29,30 +29,66 @@ def extract_category(url: str) -> str:
     return path.split("/")[0].replace("-", " ").title()
 
 def normalize_date(date_str: str) -> str:
-    if not date_str:
+    if not date_str or not isinstance(date_str, str):
         return ""
+
+    date_str = date_str.strip()
+
     for fmt in (
         "%a, %d %b %Y %H:%M:%S %Z",
+        "%a, %d %b %Y %H:%M:%S GMT",
         "%Y-%m-%d",
         "%d %b %Y",
+        "%Y-%m-%dT%H:%M:%SZ",     # ← FIX
+        "%Y-%m-%dT%H:%M:%S%z",    # ← FIX
     ):
         try:
             return datetime.strptime(date_str, fmt).strftime("%Y-%m-%d")
         except Exception:
             continue
+
+    # Handle "January 19, 2023"
+    match = re.search(r"([A-Za-z]{3,9}\s+\d{1,2},\s*\d{4})", date_str)
+    if match:
+        try:
+            return datetime.strptime(match.group(1), "%B %d, %Y").strftime("%Y-%m-%d")
+        except Exception:
+            pass
+
     return ""
 
 def extract_last_updated(soup: BeautifulSoup, headers: dict) -> str:
-    meta = soup.find("meta", {"name": re.compile("modified|updated", re.I)})
-    if meta and meta.get("content"):
-        return normalize_date(meta["content"])
+    # 1️⃣ Meta tags (name=)
+    for name in ("last-modified", "updated", "modified", "lastupdate"):
+        meta = soup.find("meta", {"name": re.compile(name, re.I)})
+        if meta and meta.get("content"):
+            dt = normalize_date(meta["content"])
+            if dt:
+                return dt
 
+    # 2️⃣ Meta tags (property=) ← CRITICAL FIX
+    for prop in ("article:modified_time", "og:updated_time"):
+        meta = soup.find("meta", {"property": prop})
+        if meta and meta.get("content"):
+            dt = normalize_date(meta["content"])
+            if dt:
+                return dt
+
+    # 3️⃣ Visible text fallback
     text = soup.get_text(" ", strip=True)
-    match = re.search(r"last updated[:\s]+([A-Za-z0-9, ]{8,})", text, re.I)
+    match = re.search(
+        r"(last updated|updated on|last modified)\s*[:\-]?\s*([A-Za-z0-9,\s\-T:Z+]{6,40})",
+        text,
+        re.I,
+    )
     if match:
-        return normalize_date(match.group(1))
+        dt = normalize_date(match.group(2))
+        if dt:
+            return dt
 
-    return normalize_date(headers.get("Last-Modified", ""))
+    # 4️⃣ HTTP headers (Playwright is lowercase)
+    lm = headers.get("last-modified") or headers.get("Last-Modified")
+    return normalize_date(lm)
 
 def extract_article_text(soup: BeautifulSoup) -> str:
     for tag in soup(["script", "style", "noscript"]):
