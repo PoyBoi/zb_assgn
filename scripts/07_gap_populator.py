@@ -330,9 +330,22 @@ def main():
 
         # Rationale: ask the model to explain why the gap should be filled, based on the contents
         prompt_rationale = (
-            "Given the cleaned article contents below, in one concise sentence explain why the gap described must be filled and what benefit the new article would provide.\n\n"
-            f"Article A Content (truncated):\n{content_a[:2500]}\n\nArticle B Content (truncated):\n{content_b[:2500]}\n\nGap summary: {gap_desc_ai or '(bridge between A and B)'}\n\nReturn a single-sentence rationale."
-        )
+    "You are writing from the USER'S point of view.\n\n"
+    "Explain WHY this gap matters to users, not the documentation team.\n"
+    "Focus on:\n"
+    "- confusion users experience\n"
+    "- mistakes or blockers they hit\n"
+    "- missing context that slows adoption or causes errors\n\n"
+    "Rules:\n"
+    "- Be specific\n"
+    "- No generic statements\n"
+    "- One concise sentence\n\n"
+    f"Article A Content (truncated):\n{content_a[:2000]}\n\n"
+    f"Article B Content (truncated):\n{content_b[:2000]}\n\n"
+    f"Identified gap:\n{gap_desc_ai or '(bridge between A and B)'}\n\n"
+    "Return ONLY one sentence explaining why this gap matters to users."
+)
+
         rationale = ""
         try:
             out_rat = call_ollama(prompt_rationale, model=OLLAMA_MODEL_DEFAULT)
