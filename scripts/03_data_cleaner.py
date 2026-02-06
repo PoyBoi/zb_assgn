@@ -2,6 +2,7 @@
 
 import re
 from pathlib import Path
+from urllib.parse import urlparse
 from typing import Optional, Tuple, List
 import pandas as pd
 from sklearn.feature_extraction.text import CountVectorizer
