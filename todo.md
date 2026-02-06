@@ -70,3 +70,30 @@
     - [ ] Workflow documentation
         - [ ] Make a diagram with arrows and stuff
         - [ ] Clean up the documentation and folders and naming and all that
+
+### Cleaning up work:
+
+- What is done: 
+    - site scraping
+    - turning it into a network 
+    - tf idf embeddings
+    - data cleaning 
+    - gap identification v1
+    - fixing scraping 
+
+- What's left: 
+    - [x] gaps identification v2 to make sure that the gaps are genuine and logical
+        - using the content of the articles, make a gap identifier based on the keywords, use the newer table to help with that 
+
+    - [x] based on the topics, need to generate a title 
+    - [x] based on the content, need to generate an outline (for 2 gaps)
+    - [ ] need to make one table by AI and one by my self
+    - [ ] need to format final deliverable spreadsheet
+
+    - [ ] workflow diagram 
+    - [ ] LLM prompts
+
+### Future Improvements
+- Use an LLM to measure the gap between two articles based on their content (based on the keywords)
+    - Not doing this because it's very time consuming
+- Use the LLM to generate an article given all the articles and ask it to generate an article which joins two articles which may not be linked in theory
