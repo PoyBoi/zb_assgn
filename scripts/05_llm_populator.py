@@ -106,7 +106,7 @@ def llm_refine_keywords(candidate_tokens, top_k=8, context=""):
 
     prompt = (
         "Select the most relevant keywords for this article.\n"
-        f"Context: {context[:300]}\n"
+        f"Context: {context}\n"
         f"Candidates: {', '.join(t for t, _ in candidate_tokens)}\n\n"
         f"Return exactly {top_k} keywords as a comma-separated list."
     )
