@@ -4303,3 +4303,125 @@ KB-173,Apis,Collection,https://help.zipboard.co/collection/173-apis,,"api, sort,
   - Sample code snippets demonstrating how to authenticate APIs and use URI structure.
   - Illustrations showing the process of integrating the zipBoard API into a user application.
   - Clarification on how to toggle search categories in API calls with relevant examples or code snippets."
+KB-5,General,Category,https://help.zipboard.co/category/5-general,,"general, tutorials, integration, tools, resources, content, annotations, zipboard",How-to Guide,285,No,"- Missing explanations:
+  - ""Can I annotate content without using the extension?"" - It's not clear what is meant by ""content"" in this context.
+  - ""Can We Add Replies for Live Annotations?"" - It's not specified where these replies would be added (e.g., within the live annotation, in a separate thread, etc.)
+  - ""Can You Assign One Content to Multiple Collaborators?"" - It's not clear what is meant by ""content"" in this context and how it can be assigned.
+  - ""Do I have a keyboard shortcut to click screens in zipBoard?"" - It's not specified which keyboard shortcuts are available for interacting with screens within the tool.
+  - ""How can I access my content back, once I have started a review session?"" - It's not clear how to recover or reaccess content after starting a review session.
+  - ""How Can I Export Data from zipBoard? How Can I Import Data to zipBoard?"" - The article mentions exporting and importing data but does not provide specific instructions on how to do so.
+  - ""How can I know how much storage space I have utilized for my current plan?"" - It's not clear where this information can be found within the tool.
+  - ""How can I record a screen for review using ZipBoard?"" - It's not specified how to record screens for review within the tool.
+  - ""How do I add a new feature request, that i wish to see in zipBoard in near future?"" - It's not clear where or how to submit feature requests.
+  - ""How do I Reorder my Screens?"" - It's not specified how to reorder screens within the tool.
+  - ""How do I Use the Responsive Test Feature of zipBoard?"" - It's not clear how to use the responsive test feature and what it entails.
+
+- Assumed prior knowledge:
+  - The reader is assumed to be familiar with the concept of review sessions, but this term is not defined in the article.
+  - The reader is assumed to be familiar with the zipBoard extension, but its installation process is not covered in the article.
+
+- Unanswered ""how"" or ""why"" questions:
+  - ""Can We Add Live Annotations without zipBoard Extension?"" - It's not clear under what circumstances live annotations can be added without the extension.
+  - ""Can We Tag or Mention Users in Live Annotation Too?"" - It's not specified how to tag or mention users within live annotations.
+  - ""How Can I Set Up Review Cycles in zipBoard"" - It's not clear how to set up review cycles and what they entail.
+  - ""How can I Work on Different Versions of my files with zipBoard?"" - It's not specified how to work with different versions of files within the tool.
+  - ""How Do I Add a New Comment?"" - While the article mentions adding a new comment, it does not provide specific instructions on how to do so.
+
+- Steps that are mentioned but not explained clearly:
+  - ""Can We Add Live Annotations without zipBoard Extension?"" - The process of adding live annotations without the extension is not detailed.
+  - ""How Can I Work on Different Versions of my files with zipBoard?"" - The process of working with different versions of files within the tool is not explained.
+
+- Areas where examples, screenshots, or clarification would help:
+  - Throughout the article, providing examples and screenshots to illustrate the steps and features being discussed would greatly improve understanding for readers. This includes examples of live annotations, different versions of files, and the responsive test feature.
+  - Clarifying terms such as ""content,"" ""review sessions,"" and ""different versions of files"" would also help readers better understand the article."
+KB-1,Knowledge Base,Collection,https://help.zipboard.co/collection/1-knowledge-base,,"Knowledge Base Collection, Zipboard, Integration, Integrate Zipboard, Microsoft, Resources, Tools, Wrike",How-to Guide,162,No,"- Missing explanations:
+  - ""How to Enable Camera and Microphone Access"" assumes the reader knows how to access system settings for camera and microphone permissions.
+  - ""General Tutorials and Guides"" does not specify what types of tutorials or guides are available.
+  - ""Image, Video, & Audio Tools and Resources"" does not explain what these tools are or how they can be used.
+  - ""PDF Tools and Resources"" does not provide any information about the PDF tools offered by zipBoard.
+  - ""URL & ZIP Tools and Resources"" does not describe what these tools do or how to use them.
+  - ""Sharing Files with External Collaborators"" does not explain the process of sharing files or setting up external collaborator permissions.
+  - ""Client Sharing & Feedback Tags, Status, & Task Manager"" does not provide details on how these features work together.
+  - ""Account & Management"" section lacks information about account creation, management, and security best practices.
+
+- Assumed prior knowledge:
+  - Readers are expected to be familiar with Microsoft Outlook, Microsoft Teams, JIRA, Wrike, LambdaTest, Procore, and Slack.
+
+- Unanswered ""how"" or ""why"" questions:
+  - No information is provided on how to get started with the zipBoard Add-in for Microsoft Outlook.
+  - The article does not explain why it's beneficial to integrate zipBoard with various third-party applications (Microsoft, JIRA, Wrike, LambdaTest, Procore, and Slack).
+
+- Steps that are mentioned but not explained clearly:
+  - ""How do I Integrate zipBoard with WRIKE"" only mentions the integration without providing steps or instructions.
+  - ""How Can I Import Data to zipBoard?"" does not provide a detailed process for importing data.
+
+- Areas where examples, screenshots, or clarification would help:
+  - The article could benefit from visual aids such as screenshots and step-by-step guides to make the instructions more understandable.
+  - Examples of how the various tools and resources can be used in practice would help readers better understand their functionality."
+KB-366,Zipboard Users,Collection,https://help.zipboard.co/collection/366-zipboard-users,,"zipboard, users, account, add, collaborator, collaborators, project, reviewer",How-to Guide,106,No,"- Missing explanations:
+  - The article does not explain what a ""Super Admin"", ""Admin"", ""Manager"", ""Collaborator"", ""Client"", ""Guest Collaborator"", and ""Reviewer"" are in the context of zipBoard.
+  - It is unclear what the responsibilities or permissions for each role are.
+
+- Assumed prior knowledge:
+  - The article assumes that readers have a basic understanding of what a project is within the zipBoard platform.
+
+- Unanswered ""how"" or ""why"" questions:
+  - The article does not explain how to work with clients in zipBoard, only mentioning it as a topic.
+  - It does not clarify why one would want to add a manager account or manage user roles better with enterprise accounts.
+
+- Steps that are mentioned but not explained clearly:
+  - The process of adding a collaborator or reviewer account is mentioned but not detailed.
+  - The process of inviting collaborators to a project is mentioned but not detailed.
+  - The process of adding a manager account is mentioned but not detailed.
+
+- Areas where examples, screenshots, or clarification would help:
+  - Examples and screenshots could be added to illustrate the steps for adding collaborators, managers, and clients.
+  - Clarification on the differences between roles and their permissions would help users understand how to best utilize each role within their projects.
+
+- No major gaps identified (for the topics explicitly addressed in the article):
+  - The article provides a clear list of topics related to user roles in zipBoard, and each topic is addressed with a brief explanation of what it entails. However, more detailed explanations and examples would improve the user experience."
+KB-167,How To Annotate A Recorded Video Using Zipboard,Article,https://help.zipboard.co/article/167-how-to-annotate-a-recorded-video-using-zipboard,2024-10-18,"video, annotate, recorded, Zipboard, article, annotation, tools, sharing",How-to Guide,220,No,"- Missing explanations:
+  - How to record the screen (implied that it has been done, but not explained)
+  - How to select a video for annotation
+  - What is the comment tool and how to access it
+- Assumed prior knowledge:
+  - Familiarity with using zipBoard
+  - Basic understanding of video playback controls (play, pause)
+- Unanswered ""how"" or ""why"" questions:
+  - How to pause the video at a specific frame for annotation
+  - How to save or submit the annotated video
+- Steps that are mentioned but not explained clearly:
+  - Clicking on the comment tool to start annotating (no details provided)
+- Areas where examples, screenshots, or clarification would help:
+  - Detailed steps for selecting a video and accessing the comment tool
+  - Screenshot demonstration of pausing the video at a specific frame and starting annotation
+- Additional information that could be helpful:
+  - Explanation of available annotation tools and their functions
+  - Information on how to save or submit the annotated video for review or collaboration."
+KB-341,How To Create And Annotate Quickly On Screenshots,Article,https://help.zipboard.co/article/341-how-to-create-and-annotate-quickly-on-screenshots,2023-12-21,"annotate, screenshot, annotate quickly, tools, screenshots, integrate, feedback, share",How-to Guide,274,No,"- Missing explanation: The article does not explain what the ""camera icon towards the bottom"" refers to in the toolbar on the left.
+- Assumed prior knowledge: It is assumed that users are familiar with uploading content through zipBoard and launching the review process.
+- Unanswered ""how"" or ""why"" questions: The article does not explain how to access the videos at the bottom, nor why they are there.
+- Steps that are mentioned but not explained clearly: The process of exiting out of the review screen by clicking on the X in the top right corner is not detailed.
+- Areas where examples, screenshots, or clarification would help: Providing visual examples of the toolbar and annotations could help users understand the process better.
+- Additional information needed: Clarification on how to access the ""camera icon"" and what other options appear when it is clicked. Also, more details about the annotation tools available in the left sidebar."
+KB-414,Streamlining Aec Collaboration With Zipboard,Article,https://help.zipboard.co/article/414-streamlining-aec-collaboration-with-zipboard,2024-12-03,"document, users, zipboard, collaboration, annotation, review, tools, integration",How-to Guide,1245,No,"- Missing explanation: It is not clear what ""click through pages"" means in the context of the panels feature. A brief description or example would help clarify this.
+- Assumed prior knowledge: The article assumes that readers are familiar with PDF documents and their basic navigation methods. A brief introduction to PDF documents and their common features could be helpful for less experienced users.
+- Unanswered ""how"" or ""why"" questions: It is not clear how the view controls cater to different workflow preferences, or why choosing different page layouts would improve clarity and comprehension. Providing examples or explanations of these benefits would help readers understand the value of these features.
+- Steps that are mentioned but not explained clearly: The process for using the marquee zoom tool is not fully explained. A step-by-step guide or example would help users understand how to use this feature effectively.
+- Areas where examples, screenshots, or clarification would help: The article could benefit from more visual examples and screenshots to illustrate the various features and their uses. This would make it easier for readers to follow along and understand the concepts being discussed.
+- New Additions: Underline tool is mentioned but no explanation or example provided on how to use it or its purpose. A brief description or demonstration of this feature would be helpful."
+KB-444,Enhancing Pdf Collaboration How To Draw On A Pdf In Zipboard,Article,https://help.zipboard.co/article/444-enhancing-pdf-collaboration-how-to-draw-on-a-pdf-in-zipboard,2025-03-14,"pdf, zipboard, tools, collaboration, markup, document, annotation, draw",How-to Guide,1188,No,"- Missing explanation: It is not clear what ""AEC"" stands for in the context of the article.
+- Assumed prior knowledge: The reader may need to know what a PDF is and how to use it before starting this guide.
+- Unanswered ""how"" or ""why"" questions: The article does not explain why traditional PDF markup methods are slow, manual, and disconnected.
+- Steps that are mentioned but not explained clearly: The process of connecting a Document Storage system to import files directly is not detailed.
+- Areas where examples, screenshots, or clarification would help: Examples of the different annotation tools (Pen Tool, Polygon, Cloud Tool, etc.) and their uses could be beneficial for understanding their functionality.
+- Clarification needed: It is not clear what ""native integrations"" and ""custom APIs"" refer to in the context of the article.
+- Steps that are assumed to be known: The reader may need to know how to sign up for a free trial, create a project, and navigate the zipBoard interface.
+- No major gaps identified if the reader is already familiar with PDFs, zipBoard's interface, and basic computer navigation."
+KB-447,Web Design Template For Design Feedback Qa,Article,https://help.zipboard.co/article/447-web-design-template-for-design-feedback-qa,2025-07-04,"web design, design feedback, project, template, user, review, approvals, integration",How-to Guide,731,No,"- Missing explanation: The article does not explain how to download or install the zipBoard Web Design Feedback Template.
+- Assumed prior knowledge: It is assumed that readers are familiar with web design, project management, and collaboration tools.
+- Unanswered ""how"" questions: The article mentions structured design iterations, centralized feedback, organized sign-offs, clear task tracking, and user validation but does not explain how these processes work in detail.
+- Steps that are mentioned but not explained clearly: The article mentions the phases of the web design process (Research & Discovery, Wireframing, Prototyping, User Validation, Client Review, Final Approval) but does not provide a step-by-step guide for each phase.
+- Areas where examples, screenshots, or clarification would help: The article could benefit from examples of how the template looks and functions, as well as screenshots demonstrating the different views (Kanban View, Table View, Task & Upload Views) mentioned in the content.
+- Unanswered ""why"" questions: The article mentions that the template helps with common web design challenges such as scattered feedback, slow approval process, and too many revision cycles, but it does not explain why these issues occur or how the template specifically addresses them.
+- No major gaps identified if the article includes a step-by-step guide for each phase of the web design process, explanations of how the template functions, examples, screenshots, and answers to ""how"" and ""why"" questions related to the common web design challenges mentioned in the content."

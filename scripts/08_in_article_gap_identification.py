@@ -17,9 +17,6 @@ MAX_CONTENT_CHARS = 3500
 # ---------------- LLM ----------------
 
 def call_ollama(prompt: str) -> str:
-    """
-    Calls Ollama via LangChain.
-    """
     from langchain_community.llms import Ollama
 
     llm = Ollama(
@@ -30,9 +27,6 @@ def call_ollama(prompt: str) -> str:
 
 
 def extract_text_block(raw: str) -> str:
-    """
-    Defensive cleanup: return plain text even if model adds noise.
-    """
     if not raw:
         return ""
     return raw.strip()
@@ -76,11 +70,32 @@ def main():
     if not Path(INPUT_CSV).exists():
         raise FileNotFoundError(f"Input CSV not found: {INPUT_CSV}")
 
-    df = pd.read_csv(INPUT_CSV, dtype=str, keep_default_na=False)
+    df_all = pd.read_csv(INPUT_CSV, dtype=str, keep_default_na=False)
+
+    # ---------------- Incremental logic ----------------
+
+    output_path = Path(OUTPUT_CSV)
+    if output_path.exists():
+        df_existing = pd.read_csv(output_path, dtype=str, keep_default_na=False)
+        existing_urls = set(df_existing["URL"].astype(str))
+        print(f"[info] Found {len(existing_urls)} already-processed articles")
+    else:
+        df_existing = None
+        existing_urls = set()
+
+    df_new = df_all[~df_all["URL"].astype(str).isin(existing_urls)].copy()
+
+    if df_new.empty:
+        print("[info] No new articles to analyze. Exiting.")
+        return
+
+    print(f"[info] Incremental mode: processing {len(df_new)} new articles")
+
+    # --------------------------------------------------
 
     output_rows = []
 
-    for idx, row in df.iterrows():
+    for idx, row in df_new.iterrows():
         article_id = row.get("Article ID", "")
         title = row.get("Name", "")
         category = row.get("Category", "")
@@ -126,10 +141,17 @@ def main():
         print(f"[processed] {article_id} | {title}")
 
     out_df = pd.DataFrame(output_rows)
-    os.makedirs(Path(OUTPUT_CSV).parent, exist_ok=True)
-    out_df.to_csv(OUTPUT_CSV, index=False)
+    os.makedirs(output_path.parent, exist_ok=True)
 
-    print(f"[done] Article gap analysis written to: {OUTPUT_CSV}")
+    write_header = not output_path.exists()
+    out_df.to_csv(
+        output_path,
+        mode="a" if not write_header else "w",
+        header=write_header,
+        index=False
+    )
+
+    print(f"[done] Appended {len(out_df)} new gap analyses to: {OUTPUT_CSV}")
 
 
 if __name__ == "__main__":
