@@ -92,6 +92,55 @@ def top_terms_for_doc(tfidf_vector, feature_names, top_n=TOP_TERMS_PER_DOC):
     idxs = np.argsort(-arr)[:top_n]
     return [feature_names[i] for i in idxs if arr[i] > 0]
 
+def filter_only_new_rows(df_cleaned: pd.DataFrame, all_content_csv: str):
+    """
+    Keep only rows whose URL exists in file_content.csv
+    but NOT in file_content_cleaned.csv.
+    """
+    all_path = Path(all_content_csv)
+    if not all_path.exists():
+        print("[warn] file_content.csv not found; proceeding with full cleaned CSV")
+        return df_cleaned
+
+    df_all = pd.read_csv(all_path)
+
+    if "URL" not in df_all.columns or "URL" not in df_cleaned.columns:
+        raise ValueError("Both CSVs must contain a 'URL' column")
+
+    all_urls = set(df_all["URL"].dropna().astype(str))
+    cleaned_urls = set(df_cleaned["URL"].dropna().astype(str))
+
+    new_urls = all_urls - cleaned_urls
+
+    if not new_urls:
+        print("[info] No new URLs detected — nothing to process")
+        return df_cleaned.iloc[0:0]  # empty df, safe downstream
+
+    df_new = df_cleaned[df_cleaned["URL"].astype(str).isin(new_urls)].copy()
+
+    print(f"[info] Incremental mode: processing {len(df_new)} new articles")
+    return df_new
+
+def append_to_cleaned_csv(df_new: pd.DataFrame, cleaned_csv_path: str):
+    """
+    Append newly processed rows into file_content_cleaned.csv.
+    Assumes df_new contains ONLY new URLs.
+    """
+    out_path = Path(cleaned_csv_path)
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+
+    write_header = not out_path.exists()
+
+    mode = "a" if out_path.exists() else "w"
+    df_new.to_csv(
+        out_path,
+        mode=mode,
+        header=write_header,
+        index=False
+    )
+
+    print(f"[info] appended {len(df_new)} rows to {cleaned_csv_path}")
+
 # ---------------- Pipeline Functions ----------------
 
 def compute_tfidf(docs, max_features=TFIDF_MAX_FEATURES, min_df=TFIDF_MIN_DF):
@@ -507,8 +556,26 @@ def plotly_3d_with_colorful_edges_and_toggle(df_meta, coords, site_map, gaps_df=
 # ---------------- Main ----------------
 
 def main(args):
+    # df, csv_path = load_input_csv()
+    # text_col = select_text_column(df)
+
+    # New code
     df, csv_path = load_input_csv()
     text_col = select_text_column(df)
+
+    # 🔹 SMART INCREMENTAL FILTERING
+    if csv_path.endswith("file_content_cleaned.csv"):
+        df = filter_only_new_rows(
+            df_cleaned=df,
+            all_content_csv="assignments/zb_assgn/data/file_content.csv"
+        )
+
+    # Early exit if nothing new
+    if df.empty:
+        print("[info] No new documents to vectorise. Exiting cleanly.")
+        return
+    # /New code
+
     # ensure URL and Article ID columns exist
     if "URL" not in df.columns:
         raise ValueError("Input CSV must contain a 'URL' column.")
@@ -589,6 +656,13 @@ def main(args):
         gaps_df = find_top_unlinked_pairs(df_meta.reset_index(drop=True), dist_mat, site_map, top_k=args.top_k)
         gaps_df.to_csv(OUT_GAPS_CSV, index=False)
         print(f"[info] Saved gap candidates to {OUT_GAPS_CSV}")
+
+    # ---------------- Persist checkpoint ----------------
+    # Append newly processed rows into cleaned CSV so they are not reprocessed next run
+    append_to_cleaned_csv(
+        df_new=df,
+        cleaned_csv_path="assignments/zb_assgn/data/file_content_cleaned.csv"
+    )
 
     print("\n✅ Done.")
 

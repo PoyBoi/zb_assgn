@@ -86,6 +86,30 @@ DEFAULT_WEIGHTS = {
 
 
 # ---------------- Helpers ----------------
+
+def load_existing_urls_from_csv(path: str) -> set:
+    if not path or not Path(path).exists():
+        return set()
+    df = pd.read_csv(path, dtype=str)
+    if "URL" not in df.columns:
+        return set()
+    return set(df["URL"].dropna().astype(str))
+
+
+def filter_only_new_rows(df_populated: pd.DataFrame, vectors_csv: str) -> pd.DataFrame:
+    """
+    Return only rows whose URL is NOT already present in vectors CSV.
+    """
+    existing_urls = load_existing_urls_from_csv(vectors_csv)
+
+    if not existing_urls:
+        print("[info] No existing vectors found — full run required")
+        return df_populated.copy()
+
+    df_new = df_populated[~df_populated["URL"].astype(str).isin(existing_urls)].copy()
+    print(f"[info] Incremental mode: {len(df_new)} new documents to vectorise")
+    return df_new
+
 def load_input_csv(default_paths=DEFAULT_INPUT_CSVS):
     for p in default_paths:
         if Path(p).exists():
@@ -612,8 +636,23 @@ def plotly_3d_with_colorful_edges_and_toggle(df_meta, coords, site_map, gaps_df=
 
 def main(args):
     # Load CSV
-    df, csv_path = load_input_csv()
-    text_col = select_text_column(df)
+    # df, csv_path = load_input_csv()
+    # text_col = select_text_column(df)
+
+    # New Code
+    df_all, csv_path = load_input_csv()
+    text_col = select_text_column(df_all)
+
+    # 🔹 SMART INCREMENTAL FILTER
+    df = filter_only_new_rows(
+        df_populated=df_all,
+        vectors_csv=args.out_vectors or OUT_VECTORS_CSV
+    )
+
+    if df.empty:
+        print("[info] No new documents to vectorise. Exiting cleanly.")
+        return
+    # /New Code
 
     # Ensure essential columns exist
     if "URL" not in df.columns:
@@ -635,6 +674,14 @@ def main(args):
     use_sbert = args.use_sbert and not args.no_sbert is False
     embeddings, emb_source, emb_tfidf_vec = get_embeddings(docs, use_sbert, tfidf_max_features=args.max_feats, tfidf_min_df=args.min_df)
     print(f"[info] Embedding source used: {emb_source}; shape: {embeddings.shape}")
+
+    # ---------------- Incremental: load existing vectors ----------------
+    vectors_path = args.out_vectors or OUT_VECTORS_CSV
+    existing_vectors_df = None
+    if Path(vectors_path).exists():
+        existing_vectors_df = pd.read_csv(vectors_path, dtype=str)
+        print(f"[info] Loaded {len(existing_vectors_df)} existing vectors from {vectors_path}")
+
 
     # UMAP (for visualization) - only if available and requested
     coords = None
@@ -659,12 +706,31 @@ def main(args):
             coords = np.pad(embeddings, ((0, 0), (0, max(0, 3 - embeddings.shape[1]))), mode="constant")
 
     # Optional clustering
+    # labels = None
+    # if args.kmeans and args.kmeans > 0:
+    #     print(f"[step] running KMeans with k={args.kmeans} ...")
+    #     k = KMeans(n_clusters=args.kmeans, random_state=args.seed, n_init=10)
+    #     labels = k.fit_predict(coords)
+    #     df_meta["cluster"] = labels
+
+    # New Code
+    # Optional clustering (incremental-safe)
     labels = None
     if args.kmeans and args.kmeans > 0:
-        print(f"[step] running KMeans with k={args.kmeans} ...")
-        k = KMeans(n_clusters=args.kmeans, random_state=args.seed, n_init=10)
-        labels = k.fit_predict(coords)
-        df_meta["cluster"] = labels
+        k_req = int(args.kmeans)
+        n_samples = coords.shape[0]
+
+        if n_samples >= k_req:
+            print(f"[step] running KMeans with k={k_req} ...")
+            k = KMeans(n_clusters=k_req, random_state=args.seed, n_init=10)
+            labels = k.fit_predict(coords)
+            df_meta["cluster"] = labels
+        else:
+            print(
+                f"[warn] Skipping KMeans: n_samples={n_samples} < k={k_req}. "
+                "Clustering deferred until more data is available."
+            )
+    # /New Code
 
     # Attach coords to df_meta
     df_meta["x"] = coords[:, 0]
@@ -676,8 +742,20 @@ def main(args):
     df_meta["top_terms"] = top_terms
 
     # Save vectors CSV (with top_terms & coords)
-    df_meta.to_csv(args.out_vectors or OUT_VECTORS_CSV, index=False)
-    print(f"[info] Saved vectors + metadata to {args.out_vectors or OUT_VECTORS_CSV}")
+    # df_meta.to_csv(args.out_vectors or OUT_VECTORS_CSV, index=False)
+    # print(f"[info] Saved vectors + metadata to {args.out_vectors or OUT_VECTORS_CSV}")
+    
+    # ---------------- Incremental: append vectors ----------------
+    write_header = not Path(vectors_path).exists()
+
+    df_meta.to_csv(
+        vectors_path,
+        mode="a" if not write_header else "w",
+        header=write_header,
+        index=False
+    )
+
+    print(f"[info] Appended {len(df_meta)} vectors to {vectors_path}")
 
     # Load and augment site_map
     site_map = load_site_map(args.site_map or SITE_MAP_FILE)
@@ -713,8 +791,23 @@ def main(args):
             "w_sem": args.w_sem, "w_topic": args.w_topic, "w_recency": args.w_recency,
             "w_media": args.w_media, "w_word": args.w_word, "w_central": args.w_central
         }, max_pairs_warning=args.max_exact)
-        gaps_df.to_csv(args.out_gaps or OUT_GAPS_CSV, index=False)
-        print(f"[info] Saved gap candidates to {args.out_gaps or OUT_GAPS_CSV}")
+        # gaps_df.to_csv(args.out_gaps or OUT_GAPS_CSV, index=False)
+        # print(f"[info] Saved gap candidates to {args.out_gaps or OUT_GAPS_CSV}")
+        
+        # New Code
+        # ---------------- Incremental: append gaps ----------------
+        gaps_path = args.out_gaps or OUT_GAPS_CSV
+        write_header = not Path(gaps_path).exists()
+
+        gaps_df.to_csv(
+            gaps_path,
+            mode="a" if not write_header else "w",
+            header=write_header,
+            index=False
+        )
+
+        print(f"[info] Appended {len(gaps_df)} gap candidates to {gaps_path}")
+        # /New Code
 
     # Produce toggles map including existing edges and gap candidate toggles (if any)
     try:

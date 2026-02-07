@@ -50,6 +50,33 @@ def extract_text_from_resp(resp):
 # =========================
 # UTILITIES
 # =========================
+
+# New code
+def load_existing_urls(csv_path: str) -> set:
+    if not os.path.exists(csv_path):
+        return set()
+    df = pd.read_csv(csv_path, dtype=str)
+    if "URL" not in df.columns:
+        return set()
+    return set(df["URL"].dropna().astype(str))
+
+
+def filter_only_new_rows(df_cleaned: pd.DataFrame, populated_csv: str) -> pd.DataFrame:
+    """
+    Return only rows whose URL is NOT already present in file_content_populated.csv
+    """
+    existing_urls = load_existing_urls(populated_csv)
+
+    if not existing_urls:
+        print("[info] No populated CSV found — full cleaned CSV will be processed")
+        return df_cleaned.copy()
+
+    df_new = df_cleaned[~df_cleaned["URL"].astype(str).isin(existing_urls)].copy()
+
+    print(f"[info] Incremental mode: {len(df_new)} new rows to process")
+    return df_new
+# /New code
+
 def word_count(text: str) -> int:
     return len(text.split()) if isinstance(text, str) else 0
 
@@ -151,7 +178,17 @@ def llm_classify_content_type(full_text):
 # MAIN PIPELINE
 # =========================
 def process_csv(infile=INPUT_CSV, outfile=OUTPUT_CSV):
-    df = pd.read_csv(infile, dtype=str).fillna("")
+    # df = pd.read_csv(infile, dtype=str).fillna("")
+    # New Code
+    df_all = pd.read_csv(infile, dtype=str).fillna("")
+
+    # 🔹 SMART INCREMENTAL FILTER
+    df = filter_only_new_rows(df_all, outfile)
+
+    if df.empty:
+        print("[info] No new rows to process — exiting cleanly.")
+        return
+    # /New Code
 
     for col in ["Topics Covered", "Content Type", "Word Count"]:
         if col not in df.columns:
@@ -192,8 +229,21 @@ def process_csv(infile=INPUT_CSV, outfile=OUTPUT_CSV):
         print(f"Topics      : {', '.join(topics)}")
         print("=" * 80)
 
-    df.to_csv(outfile, index=False)
-    print(f"\n✅ DONE — output written to: {outfile}")
+    # df.to_csv(outfile, index=False)
+    # print(f"\n✅ DONE — output written to: {outfile}")
+    
+    # New Code
+    write_header = not os.path.exists(outfile)
+
+    df.to_csv(
+        outfile,
+        mode="a" if not write_header else "w",
+        header=write_header,
+        index=False
+    )
+
+    print(f"\n✅ DONE — appended {len(df)} rows to: {outfile}")
+    # /New Code
 
 # =========================
 # ENTRY POINT
