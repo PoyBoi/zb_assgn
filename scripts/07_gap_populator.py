@@ -32,6 +32,22 @@ EXCERPT_CHARS = 300
 
 # ---------------- Helpers ----------------
 
+def load_existing_gap_pairs(output_csv: str) -> set:
+    """
+    Returns a set of frozensets: {frozenset({url_a, url_b})}
+    """
+    if not output_csv or not Path(output_csv).exists():
+        return set()
+
+    df = pd.read_csv(output_csv, dtype=str, keep_default_na=False)
+    pairs = set()
+    for _, r in df.iterrows():
+        a = (r.get("url_a") or "").strip()
+        b = (r.get("url_b") or "").strip()
+        if a and b and a != b:
+            pairs.add(frozenset((a, b)))
+    return pairs
+
 def find_first_existing(paths):
     for p in paths:
         if Path(p).exists():
@@ -253,6 +269,10 @@ def main():
     if gap_df.empty:
         print("[info] gap_candidates.csv is empty. Exiting.")
         return
+    
+    existing_pairs = load_existing_gap_pairs(OUTPUT_CSV)
+    if existing_pairs:
+        print(f"[info] Incremental mode: {len(existing_pairs)} gap pairs already processed")
 
     meta_df, meta_path = load_metadata()
     meta_map = build_meta_map(meta_df)
@@ -267,11 +287,17 @@ def main():
     used_urls = set()
     processed = 0
 
+
     for idx, row in gap_df.iterrows():
         if processed >= MAX_GAPS_TO_PROCESS:
             break
         url_a = (row.get("url_a") or row.get("URL_A") or row.get("urlA") or "").strip()
         url_b = (row.get("url_b") or row.get("URL_B") or row.get("urlB") or "").strip()
+
+        pair_key = frozenset((url_a, url_b))
+        if pair_key in existing_pairs:
+            continue
+
         if not url_a or not url_b or url_a == url_b:
             continue
         # avoid repeating any article (either as A or B) across processed pairs
@@ -424,11 +450,33 @@ def main():
     # Write enriched CSV (flatten long text safely)
     df_out = pd.DataFrame(enriched_rows)
     os.makedirs(os.path.dirname(OUTPUT_CSV), exist_ok=True)
-    df_out.to_csv(OUTPUT_CSV, index=False)
+    
+    # df_out.to_csv(OUTPUT_CSV, index=False)
+    os.makedirs(os.path.dirname(OUTPUT_CSV), exist_ok=True)
+
+    write_header = not Path(OUTPUT_CSV).exists()
+    df_out.to_csv(
+        OUTPUT_CSV,
+        mode="a" if not write_header else "w",
+        header=write_header,
+        index=False
+    )
+
+    print(f"[info] Appended {len(df_out)} enriched gaps to {OUTPUT_CSV}")
+
+    
     print(f"[info] Wrote enriched gap table to {OUTPUT_CSV}")
 
     # Write markdown summary (do NOT include full article content)
+    
+    # mode = "a" if Path(OUTPUT_MD).exists() else "w"
+    # with open(OUTPUT_MD, mode, encoding="utf8") as f:
+    
     with open(OUTPUT_MD, "w", encoding="utf8") as f:
+        # if mode == "w":
+        f.write("# Gap Candidates (AI-enriched)\n\n")
+        f.write(f"Source gap file: {os.path.abspath(gap_path)}\n\n")
+
         f.write("# Gap Candidates (AI-enriched)\n\n")
         f.write(f"Source gap file: {os.path.abspath(gap_path)}\n\n")
         for r in enriched_rows:
@@ -450,8 +498,25 @@ def main():
     print(f"[info] Wrote human-readable markdown to {OUTPUT_MD}")
 
     # Write outlines JSON
+    
+    # with open(OUT_OUTLINES_JSON, "w", encoding="utf8") as f:
+    #     json.dump(outlines_collection, f, indent=2, ensure_ascii=False)
+
+    existing_outlines = []
+    if Path(OUT_OUTLINES_JSON).exists():
+        try:
+            existing_outlines = json.loads(Path(OUT_OUTLINES_JSON).read_text(encoding="utf8"))
+        except Exception:
+            existing_outlines = []
+
+    merged_outlines = existing_outlines + outlines_collection
+
     with open(OUT_OUTLINES_JSON, "w", encoding="utf8") as f:
-        json.dump(outlines_collection, f, indent=2, ensure_ascii=False)
+        json.dump(merged_outlines, f, indent=2, ensure_ascii=False)
+
+    print(f"[info] Appended {len(outlines_collection)} outlines to {OUT_OUTLINES_JSON}")
+
+        
     print(f"[info] Wrote outlines JSON to {OUT_OUTLINES_JSON}")
 
     print("[done] All outputs written. Excerpts (not full content) were included in outputs as requested.")
