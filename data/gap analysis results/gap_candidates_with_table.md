@@ -17,7 +17,7 @@ Source gap file: /home/poyboi/VSCodesWSL/assignments/zb_assgn/data/gap_candidate
 - **Chosen Title**: Task Creation and Management with Embedded Annotations
 - **Reason for Title**: Selected because it is concise and uses terms present in both articles.
 - **Priority**: Medium
-- **Rationale**: The gap needs to be filled by providing an explanation on how to utilize embedded annotations for task management within the zipBoard platform, as the current article only discusses the extension and API but not the embedded annotations feature for task management.
+- **Rationale**: The API for tasks in the zipBoard platform allows users to remotely interact with the platform, enabling automation and integration of task management into their workflow, reducing manual effort and potential errors.
 
 ---
 
@@ -36,7 +36,7 @@ Source gap file: /home/poyboi/VSCodesWSL/assignments/zb_assgn/data/gap_candidate
 - **Chosen Title**: File Sharing with Extension-Free Review Experience
 - **Reason for Title**: Selected because it is concise and uses terms present in both articles.
 - **Priority**: Medium
-- **Rationale**: The gap needs to be filled by explaining how to share files with embedded annotations in zipBoard without the need for a browser extension, providing a seamless and hassle-free experience for clients who are uncomfortable downloading extensions.
+- **Rationale**: The absence of information on using embedded annotations for file sharing without a browser extension in zipBoard matters for users as it provides an extension-free review experience, reducing friction and facilitating collaboration with non-technical stakeholders.
 
 ---
 
@@ -55,7 +55,7 @@ Source gap file: /home/poyboi/VSCodesWSL/assignments/zb_assgn/data/gap_candidate
 - **Chosen Title**: How to Create an Organization for AI-Powered Statuses
 - **Reason for Title**: Selected because it is concise and uses terms present in both articles.
 - **Priority**: Medium
-- **Rationale**: The gap must be filled by providing instructions on how to create an organization, as it is necessary for users to gain access to the AI-Powered Statuses feature, which is not publicly enabled for everyone. This new article would benefit users by enabling them to utilize the streamlined workflow.
+- **Rationale**: The absence of clear instructions on how to create an organization for AI-Powered Statuses feature access may hinder users from effectively managing their projects and utilizing the new AI suggestions, potentially increasing support load due to user inquiries about this process.
 
 ---
 
@@ -74,11 +74,11 @@ Source gap file: /home/poyboi/VSCodesWSL/assignments/zb_assgn/data/gap_candidate
 - **Chosen Title**: Using API for Project Management in zipBoard
 - **Reason for Title**: Selected because it is concise and uses terms present in both articles.
 - **Priority**: Medium
-- **Rationale**: The gap must be filled by providing an article that explains how to utilize the zipBoard API for managing and reviewing ZIP files within projects, as it will offer developers a programmatic approach to interact with zipBoard's platform, enabling them to automate tasks related to uploading, review, etc.
+- **Rationale**: The lack of a guide on using the zipBoard API for managing and reviewing ZIP files within projects significantly limits users' ability to automate and streamline their workflows, potentially increasing support load due to manual processes.
 
 ---
 
-## GAP-005: Beta Testing Feedback Analysis using zipBoard API HTTP Status Codes
+## GAP-005: Analyzing Beta Testing Feedback with zipBoard API HTTP Status Codes
 
 - **A**: [How To Use Zipboard For Beta Testing](https://help.zipboard.co/article/134-how-to-use-zipboard-for-beta-testing)
   - Excerpt: zipBoard for Beta testing - zipBoard Help zipBoard for Beta testing zipBoard is great for testing out products during the beta phase in a software development cycle. The aim of the beta phase is to let a small group of the target audience sample the product and collect feedback from their reviews. W...
@@ -90,10 +90,10 @@ Source gap file: /home/poyboi/VSCodesWSL/assignments/zb_assgn/data/gap_candidate
 - **Gap Description (me)**: 
 - **Category**: How-to / Guide
 - **Suggested Titles**: Using HTTP Status Codes in zipBoard API for Feedback Analysis | zipBoard API and HTTP Status Codes for Beta Testing | Analyzing Beta Testing Feedback with zipBoard API HTTP Status Codes | HTTP Status Codes Integration with zipBoard API for Beta Testing | Beta Testing Feedback Analysis using zipBoard API HTTP Status Codes
-- **Chosen Title**: Beta Testing Feedback Analysis using zipBoard API HTTP Status Codes
+- **Chosen Title**: Analyzing Beta Testing Feedback with zipBoard API HTTP Status Codes
 - **Reason for Title**: Selected because it is concise and uses terms present in both articles.
 - **Priority**: Medium
-- **Rationale**: The gap must be filled to provide instructions on using HTTP Status Codes within the zipBoard API during Beta testing, enabling developers to better understand and address issues arising from user feedback.
+- **Rationale**: The absence of clear instructions on how to use HTTP Status Codes within the zipBoard API for Beta testing feedback analysis may lead to confusion for users during the feedback collection process, potentially impacting task completion and clarity, as well as increasing support load due to user inquiries about error messages.
 
 ---
 
