@@ -330,21 +330,17 @@ def main():
 
         # Rationale: ask the model to explain why the gap should be filled, based on the contents
         prompt_rationale = (
-    "You are writing from the USER'S point of view.\n\n"
-    "Explain WHY this gap matters to users, not the documentation team.\n"
-    "Focus on:\n"
-    "- confusion users experience\n"
-    "- mistakes or blockers they hit\n"
-    "- missing context that slows adoption or causes errors\n\n"
-    "Rules:\n"
-    "- Be specific\n"
-    "- No generic statements\n"
-    "- One concise sentence\n\n"
-    f"Article A Content (truncated):\n{content_a[:2000]}\n\n"
-    f"Article B Content (truncated):\n{content_b[:2000]}\n\n"
-    f"Identified gap:\n{gap_desc_ai or '(bridge between A and B)'}\n\n"
-    "Return ONLY one sentence explaining why this gap matters to users."
-)
+            "Act as a senior documentation editor. Given the short gap summary and the (truncated) article contents, "
+            "produce a single, concise sentence that explains, in third person, why this gap matters for users. "
+            "Focus on user impact (task completion, clarity, risk, or support load). "
+            "Do NOT use first-person or second-person pronouns (do not use 'I', 'we', or 'you'). "
+            "Do NOT mention the model, assistant, prompts, or internal process. "
+            "Do NOT include anything other than the single sentence.\n\n"
+            f"Gap summary: {gap_desc_ai or '(bridge between A and B)'}\n\n"
+            "Article A :\n" + (content_a or "(no content)") + "\n\n"
+            "Article B :\n" + (content_b or "(no content)") + "\n\n"
+            "Return exactly one sentence, not more than that."
+        )
 
         rationale = ""
         try:
@@ -352,8 +348,8 @@ def main():
             # Model may return plain text; take first line or parse JSON if provided
             rationale = out_rat.strip().splitlines()[0]
             # trim long responses
-            if len(rationale) > 300:
-                rationale = rationale[:297] + "..."
+            # if len(rationale) > 300:
+            #     rationale = rationale[:297] + "..."
         except Exception as e:
             print(f"[warn] Rationale AI call failed for idx {idx}: {e}")
             # heuristic rationale
