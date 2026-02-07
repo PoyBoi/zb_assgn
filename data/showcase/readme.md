@@ -1,0 +1,3 @@
+- `assignments/zb_assgn/data/file_content.csv` is the basic first CSV that is made
+- `assignments/zb_assgn/data/file_content_cleaned.csv` is the CSV which is cleaned after `assignments/zb_assgn/scripts/03_data_cleaner.py`
+- `assignments/zb_assgn/data/file_content_populated.csv` is the resulting CSV after LLM population from `assignments/zb_assgn/scripts/05_llm_populator.py`
